@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glucose Tracker</title>
+    <title>Глюкометр - Сахарный Контроль</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -44,8 +44,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <h1 class="text-center">Glucose Tracker</h1>
-                    <p class="text-center mb-0">Track your food, water, and glucose levels</p>
+                    <h1 class="text-center">Глюкометр - Сахарный Контроль</h1>
+                    <p class="text-center mb-0">Следите за едой, водой и уровнем глюкозы (и не превратитесь в сладкий леденец)</p>
                 </div>
             </div>
         </div>
@@ -57,28 +57,28 @@
             <div class="col-md-4">
                 <div class="card entry-card">
                     <div class="card-header">
-                        <h5 class="mb-0">Add Food Entry</h5>
+                        <h5 class="mb-0">Добавить Прием Пищи</h5>
                     </div>
                     <div class="card-body">
                         <form id="foodForm">
                             <div class="mb-3">
-                                <label for="mealName" class="form-label">Meal Name</label>
+                                <label for="mealName" class="form-label">Название блюда</label>
                                 <input type="text" class="form-control" id="mealName" required>
                             </div>
                             <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
+                                <label for="description" class="form-label">Описание</label>
                                 <textarea class="form-control" id="description" rows="2"></textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="carbs" class="form-label">Carbs (g)</label>
+                                        <label for="carbs" class="form-label">Углеводы (г)</label>
                                         <input type="number" class="form-control" id="carbs" step="0.01">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="protein" class="form-label">Protein (g)</label>
+                                        <label for="protein" class="form-label">Белки (г)</label>
                                         <input type="number" class="form-control" id="protein" step="0.01">
                                     </div>
                                 </div>
@@ -86,52 +86,52 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="fat" class="form-label">Fat (g)</label>
+                                        <label for="fat" class="form-label">Жиры (г)</label>
                                         <input type="number" class="form-control" id="fat" step="0.01">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="calories" class="form-label">Calories</label>
+                                        <label for="calories" class="form-label">Калории</label>
                                         <input type="number" class="form-control" id="calories" step="1">
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Add Food Entry</button>
+                            <button type="submit" class="btn btn-primary w-100">Добавить Прием Пищи</button>
                         </form>
                     </div>
                 </div>
 
                 <div class="card entry-card">
                     <div class="card-header">
-                        <h5 class="mb-0">Add Water Entry</h5>
+                        <h5 class="mb-0">Добавить Воду</h5>
                     </div>
                     <div class="card-body">
                         <form id="waterForm">
                             <div class="mb-3">
-                                <label for="waterAmount" class="form-label">Amount (ml)</label>
+                                <label for="waterAmount" class="form-label">Объем (мл)</label>
                                 <input type="number" class="form-control" id="waterAmount" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Add Water Entry</button>
+                            <button type="submit" class="btn btn-primary w-100">Добавить Воду</button>
                         </form>
                     </div>
                 </div>
 
                 <div class="card entry-card">
                     <div class="card-header">
-                        <h5 class="mb-0">Add Glucose Reading</h5>
+                        <h5 class="mb-0">Добавить Измерение Глюкозы</h5>
                     </div>
                     <div class="card-body">
                         <form id="glucoseForm">
                             <div class="mb-3">
-                                <label for="glucoseReading" class="form-label">Glucose Level (mg/dL)</label>
+                                <label for="glucoseReading" class="form-label">Уровень Глюкозы (мг/дл)</label>
                                 <input type="number" class="form-control" id="glucoseReading" required>
                             </div>
                             <div class="mb-3">
-                                <label for="glucoseNotes" class="form-label">Notes</label>
+                                <label for="glucoseNotes" class="form-label">Заметки</label>
                                 <textarea class="form-control" id="glucoseNotes" rows="2"></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Add Glucose Reading</button>
+                            <button type="submit" class="btn btn-primary w-100">Добавить Измерение Глюкозы</button>
                         </form>
                     </div>
                 </div>
@@ -141,11 +141,11 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Recent Entries</h5>
+                        <h5 class="mb-0">Недавние Записи</h5>
                         <div>
                             <input type="date" id="startDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
                             <input type="date" id="endDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
-                            <button id="filterBtn" class="btn btn-sm btn-outline-secondary">Filter</button>
+                            <button id="filterBtn" class="btn btn-sm btn-outline-secondary">Фильтр</button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -192,13 +192,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert('Food entry added successfully!');
+                alert('Прием пищи успешно добавлен! Сахар в крови уже повышается? ;)');
                 document.getElementById('foodForm').reset();
                 loadEntries();
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error adding food entry');
+                alert('Ошибка при добавлении приема пищи');
             });
         });
 
@@ -218,13 +218,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert('Water entry added successfully!');
+                alert('Вода успешно добавлена! Не превратитесь в морскую звезду ;)');
                 document.getElementById('waterForm').reset();
                 loadEntries();
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error adding water entry');
+                alert('Ошибка при добавлении воды');
             });
         });
 
@@ -245,13 +245,13 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert('Glucose reading added successfully!');
+                alert('Измерение глюкозы успешно добавлено! Сахарный магнат в действии! ;)');
                 document.getElementById('glucoseForm').reset();
                 loadEntries();
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error adding glucose reading');
+                alert('Ошибка при добавлении измерения глюкозы');
             });
         });
 
@@ -280,7 +280,7 @@
             const container = document.getElementById('entriesList');
             
             if (entries.length === 0) {
-                container.innerHTML = '<p class="text-muted">No entries found</p>';
+                container.innerHTML = '<p class="text-muted">Записи не найдены (ваш сахарный уровень в порядке, или вы ничего не ели?)</p>';
                 return;
             }
             
@@ -310,7 +310,7 @@
                 const formattedDate = date.toLocaleDateString();
                 
                 entryHtml += `<div class="d-flex justify-content-between">
-                    <strong>${entry.entry_type.charAt(0).toUpperCase() + entry.entry_type.slice(1)}</strong>
+                    <strong>` + (entry.entry_type === 'food' ? 'Прием пищи' : entry.entry_type === 'water' ? 'Вода' : 'Глюкоза') + `</strong>
                     <small class="text-muted">${formattedDate} ${formattedTime}</small>
                 </div>`;
                 

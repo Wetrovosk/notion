@@ -1,5 +1,5 @@
 ```
 node_modules/
 package-lock.json
-glucose_tracker.db
+.glucose_tracker.db
 ```
