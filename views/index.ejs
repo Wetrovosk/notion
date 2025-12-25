@@ -37,6 +37,21 @@
         .food-entry { border-left: 4px solid #28a745; }
         .water-entry { border-left: 4px solid #17a2b8; }
         .glucose-entry { border-left: 4px solid #dc3545; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -127,6 +142,7 @@
                                 <label for="glucoseReading" class="form-label">Уровень Глюкозы (ммоль/л)</label>
                                 <input type="number" class="form-control" id="glucoseReading" step="0.01" min="0" required>
                                 <div id="glucoseStatus" class="form-text" style="display: none;"></div>
+                                <div class="form-text text-muted">Норма: 3.9 - 6.1 ммоль/л</div>
                             </div>
                             <div class="mb-3">
                                 <label for="glucoseNotes" class="form-label">Заметки</label>
@@ -169,6 +185,25 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('startDate').value = today;
             document.getElementById('endDate').value = today;
+            
+            // Add some humor to the page
+            const humorMessages = [
+                "Сахар в крови - как настроение: то выше нормы, то ниже...",
+                "Помните: сладкое в крови - не то же самое, что сладкая жизнь!",
+                "Глюкометр не волшебная палочка, но помогает оставаться в рамках приличия",
+                "Норма глюкозы - как идеальный вес: все знают, но у всех разная ;)",
+                "Сахар в крови: 3.9-6.1 ммоль/л - норма, как и количество кофеиновых напитков в день"
+            ];
+            
+            // Display random humor message
+            const randomMessage = humorMessages[Math.floor(Math.random() * humorMessages.length)];
+            const headerDiv = document.querySelector('.header');
+            if (headerDiv) {
+                const humorDiv = document.createElement('div');
+                humorDiv.className = 'text-center mt-2';
+                humorDiv.innerHTML = `<small class="text-light">${randomMessage}</small>`;
+                headerDiv.appendChild(humorDiv);
+            }
         });
 
         // Form submission handlers
@@ -331,7 +366,7 @@
                         break;
                 }
                 
-                entryHtml += '">';
+                entryHtml += ' p-3" style="animation: fadeIn 0.3s ease-in;">';
                 
                 // Format timestamp
                 const date = new Date(entry.timestamp);
@@ -339,7 +374,7 @@
                 const formattedDate = date.toLocaleDateString();
                 
                 entryHtml += `<div class="d-flex justify-content-between">
-                    <strong>` + (entry.entry_type === 'food' ? 'Прием пищи' : entry.entry_type === 'water' ? 'Вода' : 'Глюкоза') + `</strong>
+                    <strong>` + (entry.entry_type === 'food' ? '🍽 Прием пищи' : entry.entry_type === 'water' ? '💧 Вода' : '📊 Глюкоза') + `</strong>
                     <small class="text-muted">${formattedDate} ${formattedTime}</small>
                 </div>`;
                 
@@ -352,7 +387,7 @@
                 }
                 
                 if (entry.amount_ml) {
-                    entryHtml += `<div>Water: ${entry.amount_ml} ml</div>`;
+                    entryHtml += `<div>💧 Water: ${entry.amount_ml} ml</div>`;
                 }
                 
                 if (entry.glucose_reading) {
@@ -362,32 +397,36 @@
                     const normalMax = 6.1;
                     let statusClass = '';
                     let statusText = '';
+                    let emoji = '';
                     
                     if (reading >= normalMin && reading <= normalMax) {
                         statusClass = 'text-success';
                         statusText = ' (норма)';
+                        emoji = '✅';
                     } else if (reading < normalMin) {
                         statusClass = 'text-warning';
                         statusText = ' (ниже нормы)';
+                        emoji = '⚠️';
                     } else {
                         statusClass = 'text-danger';
                         statusText = ' (выше нормы)';
+                        emoji = '❌';
                     }
                     
-                    entryHtml += `<div class="glucose-display"><span class="${statusClass}">Glucose: ${reading} ммоль/л</span>${statusText}</div>`;
+                    entryHtml += `<div class="glucose-display">${emoji} <span class="${statusClass}">Glucose: ${reading} ммоль/л</span>${statusText}</div>`;
                 }
                 
                 if (entry.carbs || entry.protein || entry.fat || entry.calories) {
                     entryHtml += '<div class="mt-1">';
-                    if (entry.carbs) entryHtml += `<span class="badge bg-secondary me-1">Carbs: ${entry.carbs}g</span>`;
-                    if (entry.protein) entryHtml += `<span class="badge bg-secondary me-1">Protein: ${entry.protein}g</span>`;
-                    if (entry.fat) entryHtml += `<span class="badge bg-secondary me-1">Fat: ${entry.fat}g</span>`;
-                    if (entry.calories) entryHtml += `<span class="badge bg-secondary me-1">Calories: ${entry.calories}</span>`;
+                    if (entry.carbs) entryHtml += `<span class="badge bg-primary me-1"> углеводы: ${entry.carbs}g</span>`;
+                    if (entry.protein) entryHtml += `<span class="badge bg-success me-1">белки: ${entry.protein}g</span>`;
+                    if (entry.fat) entryHtml += `<span class="badge bg-warning me-1">жиры: ${entry.fat}g</span>`;
+                    if (entry.calories) entryHtml += `<span class="badge bg-info me-1">ккал: ${entry.calories}</span>`;
                     entryHtml += '</div>';
                 }
                 
                 if (entry.notes) {
-                    entryHtml += `<div class="mt-1"><em>Notes: ${entry.notes}</em></div>`;
+                    entryHtml += `<div class="mt-1"><em>📝 ${entry.notes}</em></div>`;
                 }
                 
                 entryHtml += '</div>';

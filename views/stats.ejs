@@ -28,6 +28,10 @@
             height: 400px;
             margin-top: 20px;
         }
+        
+        .glucose-normal { color: #28a745; }
+        .glucose-high { color: #dc3545; }
+        .glucose-low { color: #ffc107; }
     </style>
 </head>
 <body>
@@ -76,7 +80,7 @@
                     <div class="card-body text-center">
                         <h5>Average Glucose</h5>
                         <h2 id="avgGlucose">-</h2>
-                        <p class="text-muted">mg/dL</p>
+                        <p class="text-muted">ммоль/л</p>
                     </div>
                 </div>
             </div>
@@ -85,7 +89,7 @@
                     <div class="card-body text-center">
                         <h5>Min Glucose</h5>
                         <h2 id="minGlucose">-</h2>
-                        <p class="text-muted">mg/dL</p>
+                        <p class="text-muted">ммоль/л</p>
                     </div>
                 </div>
             </div>
@@ -94,7 +98,7 @@
                     <div class="card-body text-center">
                         <h5>Max Glucose</h5>
                         <h2 id="maxGlucose">-</h2>
-                        <p class="text-muted">mg/dL</p>
+                        <p class="text-muted">ммоль/л</p>
                     </div>
                 </div>
             </div>
@@ -161,6 +165,25 @@
             document.getElementById('startDate').valueAsDate = weekAgo;
             document.getElementById('endDate').valueAsDate = today;
             
+            // Add humor to the page
+            const humorMessages = [
+                "Сахар в крови - как настроение: то выше нормы, то ниже...",
+                "Помните: сладкое в крови - не то же самое, что сладкая жизнь!",
+                "Глюкометр не волшебная палочка, но помогает оставаться в рамках приличия",
+                "Норма глюкозы - как идеальный вес: все знают, но у всех разная ;)",
+                "Сахар в крови: 3.9-6.1 ммоль/л - норма, как и количество кофеиновых напитков в день"
+            ];
+            
+            // Display random humor message
+            const randomMessage = humorMessages[Math.floor(Math.random() * humorMessages.length)];
+            const headerDiv = document.querySelector('.header');
+            if (headerDiv) {
+                const humorDiv = document.createElement('div');
+                humorDiv.className = 'text-center mt-2';
+                humorDiv.innerHTML = `<small class="text-light">${randomMessage}</small>`;
+                headerDiv.appendChild(humorDiv);
+            }
+            
             initializeCharts();
             loadData();
         });
@@ -172,7 +195,7 @@
                 data: {
                     labels: [],
                     datasets: [{
-                        label: 'Glucose Level (mg/dL)',
+                        label: 'Glucose Level (ммоль/л)',
                         data: [],
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
@@ -347,9 +370,9 @@
             waterChart.update();
             
             // Update glucose distribution chart
-            const normalCount = glucoseLevels.filter(level => level >= 70 && level <= 140).length;
-            const highCount = glucoseLevels.filter(level => level > 140).length;
-            const lowCount = glucoseLevels.filter(level => level < 70).length;
+            const normalCount = glucoseLevels.filter(level => level >= 3.9 && level <= 6.1).length;
+            const highCount = glucoseLevels.filter(level => level > 6.1).length;
+            const lowCount = glucoseLevels.filter(level => level < 3.9).length;
             
             glucoseDistributionChart.data.datasets[0].data = [normalCount, highCount, lowCount];
             glucoseDistributionChart.update();
@@ -365,11 +388,21 @@
                 const min = Math.min(...glucoseReadings);
                 const max = Math.max(...glucoseReadings);
                 
-                document.getElementById('avgGlucose').textContent = avg.toFixed(1);
+                // Determine status for average
+                let avgStatus = '';
+                if (avg >= 3.9 && avg <= 6.1) {
+                    avgStatus = ' <span class="glucose-normal">(норма)</span>';
+                } else if (avg < 3.9) {
+                    avgStatus = ' <span class="glucose-low">(ниже нормы)</span>';
+                } else {
+                    avgStatus = ' <span class="glucose-high">(выше нормы)</span>';
+                }
+                
+                document.getElementById('avgGlucose').innerHTML = avg.toFixed(1) + avgStatus;
                 document.getElementById('minGlucose').textContent = min;
                 document.getElementById('maxGlucose').textContent = max;
             } else {
-                document.getElementById('avgGlucose').textContent = '-';
+                document.getElementById('avgGlucose').innerHTML = '-';
                 document.getElementById('minGlucose').textContent = '-';
                 document.getElementById('maxGlucose').textContent = '-';
             }
