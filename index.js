@@ -41,7 +41,7 @@ db.serialize(() => {
   // Glucose readings table
   db.run(`CREATE TABLE IF NOT EXISTS glucose_readings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    reading INTEGER NOT NULL,
+    reading REAL NOT NULL,
     notes TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
@@ -57,7 +57,7 @@ db.serialize(() => {
     fat REAL,
     calories REAL,
     amount_ml INTEGER,
-    glucose_reading INTEGER,
+    glucose_reading REAL,
     notes TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);

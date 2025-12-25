@@ -124,8 +124,9 @@
                     <div class="card-body">
                         <form id="glucoseForm">
                             <div class="mb-3">
-                                <label for="glucoseReading" class="form-label">Уровень Глюкозы (мг/дл)</label>
-                                <input type="number" class="form-control" id="glucoseReading" required>
+                                <label for="glucoseReading" class="form-label">Уровень Глюкозы (ммоль/л)</label>
+                                <input type="number" class="form-control" id="glucoseReading" step="0.01" min="0" required>
+                                <div id="glucoseStatus" class="form-text" style="display: none;"></div>
                             </div>
                             <div class="mb-3">
                                 <label for="glucoseNotes" class="form-label">Заметки</label>
@@ -232,7 +233,7 @@
             e.preventDefault();
             
             const data = {
-                reading: parseInt(document.getElementById('glucoseReading').value),
+                reading: parseFloat(document.getElementById('glucoseReading').value),
                 notes: document.getElementById('glucoseNotes').value
             };
             
@@ -247,12 +248,40 @@
             .then(data => {
                 alert('Измерение глюкозы успешно добавлено! Сахарный магнат в действии! ;)');
                 document.getElementById('glucoseForm').reset();
+                document.getElementById('glucoseStatus').style.display = 'none';
                 loadEntries();
             })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Ошибка при добавлении измерения глюкозы');
             });
+        });
+
+        // Add real-time validation and status display for glucose reading
+        document.getElementById('glucoseReading').addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            const statusDiv = document.getElementById('glucoseStatus');
+            
+            if (isNaN(value)) {
+                statusDiv.style.display = 'none';
+                return;
+            }
+            
+            const normalMin = 3.9;
+            const normalMax = 6.1;
+            
+            statusDiv.style.display = 'block';
+            
+            if (value >= normalMin && value <= normalMax) {
+                statusDiv.textContent = `Норма (${normalMin}-${normalMax} ммоль/л)`;
+                statusDiv.className = 'form-text text-success';
+            } else if (value < normalMin) {
+                statusDiv.textContent = `Ниже нормы (норма: ${normalMin}-${normalMax} ммоль/л)`;
+                statusDiv.className = 'form-text text-warning';
+            } else {
+                statusDiv.textContent = `Выше нормы (норма: ${normalMin}-${normalMax} ммоль/л)`;
+                statusDiv.className = 'form-text text-danger';
+            }
         });
 
         // Load entries function
@@ -327,7 +356,25 @@
                 }
                 
                 if (entry.glucose_reading) {
-                    entryHtml += `<div>Glucose: ${entry.glucose_reading} mg/dL</div>`;
+                    // Determine glucose status for display
+                    const reading = entry.glucose_reading;
+                    const normalMin = 3.9;
+                    const normalMax = 6.1;
+                    let statusClass = '';
+                    let statusText = '';
+                    
+                    if (reading >= normalMin && reading <= normalMax) {
+                        statusClass = 'text-success';
+                        statusText = ' (норма)';
+                    } else if (reading < normalMin) {
+                        statusClass = 'text-warning';
+                        statusText = ' (ниже нормы)';
+                    } else {
+                        statusClass = 'text-danger';
+                        statusText = ' (выше нормы)';
+                    }
+                    
+                    entryHtml += `<div class="glucose-display"><span class="${statusClass}">Glucose: ${reading} ммоль/л</span>${statusText}</div>`;
                 }
                 
                 if (entry.carbs || entry.protein || entry.fat || entry.calories) {
