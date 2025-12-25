@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glucose Tracker - Statistics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .header {
+            background: linear-gradient(135deg, #6c63ff, #4a44b5);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center">Glucose Tracker Statistics</h1>
+                    <p class="text-center mb-0">View your food, water, and glucose trends</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Filter Data</h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="startDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="endDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <div>
+                                    <button class="btn btn-primary" id="applyFilter">Apply Filter</button>
+                                    <button class="btn btn-outline-secondary" id="resetFilter">Reset</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <h5>Average Glucose</h5>
+                        <h2 id="avgGlucose">-</h2>
+                        <p class="text-muted">mg/dL</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <h5>Min Glucose</h5>
+                        <h2 id="minGlucose">-</h2>
+                        <p class="text-muted">mg/dL</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <h5>Max Glucose</h5>
+                        <h2 id="maxGlucose">-</h2>
+                        <p class="text-muted">mg/dL</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Glucose Levels Over Time</h5>
+                        <div class="chart-container">
+                            <canvas id="glucoseChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Food Intake Over Time</h5>
+                        <div class="chart-container">
+                            <canvas id="foodChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Water Intake Over Time</h5>
+                        <div class="chart-container">
+                            <canvas id="waterChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <h5 class="card-title">Glucose Distribution</h5>
+                        <div class="chart-container">
+                            <canvas id="glucoseDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize charts
+        let glucoseChart, foodChart, waterChart, glucoseDistributionChart;
+        
+        // Set default dates to last 7 days
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const weekAgo = new Date();
+            weekAgo.setDate(today.getDate() - 7);
+            
+            document.getElementById('startDate').valueAsDate = weekAgo;
+            document.getElementById('endDate').valueAsDate = today;
+            
+            initializeCharts();
+            loadData();
+        });
+
+        function initializeCharts() {
+            const glucoseCtx = document.getElementById('glucoseChart').getContext('2d');
+            glucoseChart = new Chart(glucoseCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Glucose Level (mg/dL)',
+                        data: [],
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+
+            const foodCtx = document.getElementById('foodChart').getContext('2d');
+            foodChart = new Chart(foodCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Food Entries',
+                        data: [],
+                        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            const waterCtx = document.getElementById('waterChart').getContext('2d');
+            waterChart = new Chart(waterCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Water (ml)',
+                        data: [],
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            const glucoseDistCtx = document.getElementById('glucoseDistributionChart').getContext('2d');
+            glucoseDistributionChart = new Chart(glucoseDistCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Normal', 'High', 'Low'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.6)',  // Normal (green)
+                            'rgba(255, 99, 132, 0.6)',  // High (red)
+                            'rgba(54, 162, 235, 0.6)'   // Low (blue)
+                        ],
+                        borderColor: [
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        function loadData() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            // Format dates to include time
+            const startDateTime = `${startDate}T00:00:00`;
+            const endDateTime = `${endDate}T23:59:59`;
+            
+            // Fetch tracking entries
+            fetch(`/api/tracking-entries?startDate=${startDateTime}&endDate=${endDateTime}`)
+            .then(response => response.json())
+            .then(entries => {
+                updateCharts(entries);
+                updateStats(entries);
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+            });
+        }
+
+        function updateCharts(entries) {
+            // Prepare data for charts
+            const glucoseData = [];
+            const foodData = [];
+            const waterData = [];
+            const glucoseLevels = [];
+            
+            // Group entries by date
+            const groupedEntries = {};
+            entries.forEach(entry => {
+                const date = new Date(entry.timestamp).toLocaleDateString();
+                if (!groupedEntries[date]) {
+                    groupedEntries[date] = [];
+                }
+                groupedEntries[date].push(entry);
+            });
+            
+            // Prepare chart labels (dates)
+            const dates = Object.keys(groupedEntries).sort();
+            
+            // Process each date
+            dates.forEach(date => {
+                const dayEntries = groupedEntries[date];
+                
+                // Find glucose readings for this date
+                const glucoseReadings = dayEntries
+                    .filter(entry => entry.entry_type === 'glucose' && entry.glucose_reading)
+                    .map(entry => entry.glucose_reading);
+                
+                // Calculate average glucose for this date
+                let avgGlucose = 0;
+                if (glucoseReadings.length > 0) {
+                    avgGlucose = glucoseReadings.reduce((sum, val) => sum + val, 0) / glucoseReadings.length;
+                }
+                
+                glucoseData.push(avgGlucose);
+                
+                // Count food entries for this date
+                const foodCount = dayEntries.filter(entry => entry.entry_type === 'food').length;
+                foodData.push(foodCount);
+                
+                // Sum water entries for this date
+                const waterSum = dayEntries
+                    .filter(entry => entry.entry_type === 'water' && entry.amount_ml)
+                    .reduce((sum, entry) => sum + entry.amount_ml, 0);
+                waterData.push(waterSum);
+                
+                // Collect all glucose levels for distribution chart
+                glucoseLevels.push(...glucoseReadings);
+            });
+            
+            // Update glucose chart
+            glucoseChart.data.labels = dates;
+            glucoseChart.data.datasets[0].data = glucoseData;
+            glucoseChart.update();
+            
+            // Update food chart
+            foodChart.data.labels = dates;
+            foodChart.data.datasets[0].data = foodData;
+            foodChart.update();
+            
+            // Update water chart
+            waterChart.data.labels = dates;
+            waterChart.data.datasets[0].data = waterData;
+            waterChart.update();
+            
+            // Update glucose distribution chart
+            const normalCount = glucoseLevels.filter(level => level >= 70 && level <= 140).length;
+            const highCount = glucoseLevels.filter(level => level > 140).length;
+            const lowCount = glucoseLevels.filter(level => level < 70).length;
+            
+            glucoseDistributionChart.data.datasets[0].data = [normalCount, highCount, lowCount];
+            glucoseDistributionChart.update();
+        }
+
+        function updateStats(entries) {
+            const glucoseReadings = entries
+                .filter(entry => entry.entry_type === 'glucose' && entry.glucose_reading)
+                .map(entry => entry.glucose_reading);
+            
+            if (glucoseReadings.length > 0) {
+                const avg = glucoseReadings.reduce((sum, val) => sum + val, 0) / glucoseReadings.length;
+                const min = Math.min(...glucoseReadings);
+                const max = Math.max(...glucoseReadings);
+                
+                document.getElementById('avgGlucose').textContent = avg.toFixed(1);
+                document.getElementById('minGlucose').textContent = min;
+                document.getElementById('maxGlucose').textContent = max;
+            } else {
+                document.getElementById('avgGlucose').textContent = '-';
+                document.getElementById('minGlucose').textContent = '-';
+                document.getElementById('maxGlucose').textContent = '-';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('applyFilter').addEventListener('click', loadData);
+        
+        document.getElementById('resetFilter').addEventListener('click', function() {
+            const today = new Date();
+            const weekAgo = new Date();
+            weekAgo.setDate(today.getDate() - 7);
+            
+            document.getElementById('startDate').valueAsDate = weekAgo;
+            document.getElementById('endDate').valueAsDate = today;
+            
+            loadData();
+        });
+
+        // Load data when page loads
+        loadData();
+    </script>
+</body>
+</html>

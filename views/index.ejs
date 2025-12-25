@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glucose Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+        .header {
+            background: linear-gradient(135deg, #6c63ff, #4a44b5);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        .btn-primary {
+            background-color: #6c63ff;
+            border-color: #6c63ff;
+        }
+        .btn-primary:hover {
+            background-color: #5a52e0;
+            border-color: #5a52e0;
+        }
+        .entry-card {
+            transition: transform 0.2s;
+        }
+        .entry-card:hover {
+            transform: translateY(-2px);
+        }
+        .food-entry { border-left: 4px solid #28a745; }
+        .water-entry { border-left: 4px solid #17a2b8; }
+        .glucose-entry { border-left: 4px solid #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1 class="text-center">Glucose Tracker</h1>
+                    <p class="text-center mb-0">Track your food, water, and glucose levels</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <!-- Input Forms -->
+            <div class="col-md-4">
+                <div class="card entry-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Add Food Entry</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="foodForm">
+                            <div class="mb-3">
+                                <label for="mealName" class="form-label">Meal Name</label>
+                                <input type="text" class="form-control" id="mealName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" rows="2"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="carbs" class="form-label">Carbs (g)</label>
+                                        <input type="number" class="form-control" id="carbs" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="protein" class="form-label">Protein (g)</label>
+                                        <input type="number" class="form-control" id="protein" step="0.01">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="fat" class="form-label">Fat (g)</label>
+                                        <input type="number" class="form-control" id="fat" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="calories" class="form-label">Calories</label>
+                                        <input type="number" class="form-control" id="calories" step="1">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Food Entry</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card entry-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Add Water Entry</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="waterForm">
+                            <div class="mb-3">
+                                <label for="waterAmount" class="form-label">Amount (ml)</label>
+                                <input type="number" class="form-control" id="waterAmount" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Water Entry</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card entry-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Add Glucose Reading</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="glucoseForm">
+                            <div class="mb-3">
+                                <label for="glucoseReading" class="form-label">Glucose Level (mg/dL)</label>
+                                <input type="number" class="form-control" id="glucoseReading" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="glucoseNotes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="glucoseNotes" rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Add Glucose Reading</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Entries -->
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Entries</h5>
+                        <div>
+                            <input type="date" id="startDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
+                            <input type="date" id="endDate" class="form-control form-control-sm d-inline-block" style="width: auto;">
+                            <button id="filterBtn" class="btn btn-sm btn-outline-secondary">Filter</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="entriesList">
+                            <!-- Entries will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Load recent entries on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEntries();
+            
+            // Set default date range to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+        });
+
+        // Form submission handlers
+        document.getElementById('foodForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                meal_name: document.getElementById('mealName').value,
+                description: document.getElementById('description').value,
+                carbs: parseFloat(document.getElementById('carbs').value) || null,
+                protein: parseFloat(document.getElementById('protein').value) || null,
+                fat: parseFloat(document.getElementById('fat').value) || null,
+                calories: parseInt(document.getElementById('calories').value) || null
+            };
+            
+            fetch('/api/food', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Food entry added successfully!');
+                document.getElementById('foodForm').reset();
+                loadEntries();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding food entry');
+            });
+        });
+
+        document.getElementById('waterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                amount_ml: parseInt(document.getElementById('waterAmount').value)
+            };
+            
+            fetch('/api/water', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Water entry added successfully!');
+                document.getElementById('waterForm').reset();
+                loadEntries();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding water entry');
+            });
+        });
+
+        document.getElementById('glucoseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                reading: parseInt(document.getElementById('glucoseReading').value),
+                notes: document.getElementById('glucoseNotes').value
+            };
+            
+            fetch('/api/glucose', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Glucose reading added successfully!');
+                document.getElementById('glucoseForm').reset();
+                loadEntries();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error adding glucose reading');
+            });
+        });
+
+        // Load entries function
+        function loadEntries() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            let url = '/api/tracking-entries';
+            if (startDate && endDate) {
+                url += `?startDate=${startDate}T00:00:00&endDate=${endDate}T23:59:59`;
+            }
+            
+            fetch(url)
+            .then(response => response.json())
+            .then(entries => {
+                displayEntries(entries);
+            })
+            .catch(error => {
+                console.error('Error loading entries:', error);
+            });
+        }
+
+        // Display entries function
+        function displayEntries(entries) {
+            const container = document.getElementById('entriesList');
+            
+            if (entries.length === 0) {
+                container.innerHTML = '<p class="text-muted">No entries found</p>';
+                return;
+            }
+            
+            let html = '<div class="list-group">';
+            
+            entries.forEach(entry => {
+                let entryHtml = '<div class="list-group-item ';
+                
+                // Add class based on entry type
+                switch(entry.entry_type) {
+                    case 'food':
+                        entryHtml += 'food-entry';
+                        break;
+                    case 'water':
+                        entryHtml += 'water-entry';
+                        break;
+                    case 'glucose':
+                        entryHtml += 'glucose-entry';
+                        break;
+                }
+                
+                entryHtml += '">';
+                
+                // Format timestamp
+                const date = new Date(entry.timestamp);
+                const formattedTime = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const formattedDate = date.toLocaleDateString();
+                
+                entryHtml += `<div class="d-flex justify-content-between">
+                    <strong>${entry.entry_type.charAt(0).toUpperCase() + entry.entry_type.slice(1)}</strong>
+                    <small class="text-muted">${formattedDate} ${formattedTime}</small>
+                </div>`;
+                
+                if (entry.meal_name) {
+                    entryHtml += `<div><strong>${entry.meal_name}</strong></div>`;
+                }
+                
+                if (entry.description) {
+                    entryHtml += `<div class="text-muted">${entry.description}</div>`;
+                }
+                
+                if (entry.amount_ml) {
+                    entryHtml += `<div>Water: ${entry.amount_ml} ml</div>`;
+                }
+                
+                if (entry.glucose_reading) {
+                    entryHtml += `<div>Glucose: ${entry.glucose_reading} mg/dL</div>`;
+                }
+                
+                if (entry.carbs || entry.protein || entry.fat || entry.calories) {
+                    entryHtml += '<div class="mt-1">';
+                    if (entry.carbs) entryHtml += `<span class="badge bg-secondary me-1">Carbs: ${entry.carbs}g</span>`;
+                    if (entry.protein) entryHtml += `<span class="badge bg-secondary me-1">Protein: ${entry.protein}g</span>`;
+                    if (entry.fat) entryHtml += `<span class="badge bg-secondary me-1">Fat: ${entry.fat}g</span>`;
+                    if (entry.calories) entryHtml += `<span class="badge bg-secondary me-1">Calories: ${entry.calories}</span>`;
+                    entryHtml += '</div>';
+                }
+                
+                if (entry.notes) {
+                    entryHtml += `<div class="mt-1"><em>Notes: ${entry.notes}</em></div>`;
+                }
+                
+                entryHtml += '</div>';
+                html += entryHtml;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // Filter button handler
+        document.getElementById('filterBtn').addEventListener('click', loadEntries);
+        
+        // Also reload when date inputs change
+        document.getElementById('startDate').addEventListener('change', loadEntries);
+        document.getElementById('endDate').addEventListener('change', loadEntries);
+    </script>
+</body>
+</html>
