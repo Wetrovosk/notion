@@ -1,31 +1,45 @@
 ```
-# Compiled and build artifacts
-*.pyc
-__pycache__/
-*.o
-*.obj
-dist/
-build/
-target/
+# Database files
+*.db
+
+# Environment files
+.env
+.env.local
+*.env.*
 
 # Dependencies
 node_modules/
 venv/
 .venv/
-.env
-.env.local
-.env.*
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
 
-# Logs and temp files
+# Build artifacts
+dist/
+build/
+*.js
+*.min.js
+*.css
+*.min.css
+
+# Logs
 *.log
-*.tmp
-*.swp
 
-# Editors
+# Editor files
 .vscode/
 .idea/
+*.swp
+*.swo
+*.tmp
 
-# OS generated files
+# OS files
 .DS_Store
 Thumbs.db
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
 ```
